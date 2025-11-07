@@ -6,6 +6,9 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    if BASE_DIR not in sys.path:
+        sys.path.append(BASE_DIR)
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project_harvey.settings')
     try:
         from django.core.management import execute_from_command_line

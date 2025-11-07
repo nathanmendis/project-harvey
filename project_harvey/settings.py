@@ -143,4 +143,6 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GENAI_CLIENT = genai.Client(api_key=GOOGLE_API_KEY)
 # print("Google API Key:", GOOGLE_API_KEY)  
 
-
+# Media files (User-uploaded content)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR.parent / 'media'

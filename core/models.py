@@ -96,7 +96,7 @@ class Message(models.Model):
 class Candidate(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
     skills = models.JSONField(null=True, blank=True)
     resume_file = models.FileField(upload_to='resumes/')
