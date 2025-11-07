@@ -1,7 +1,50 @@
 {% extends 'admin_base.html' %}
 {% block content %}
-<div class="p-6 text-center">
-  <h2 class="text-2xl font-bold">Manage Candidates</h2>
-  <p class="mt-4 text-gray-600">Candidate management features coming soon...</p>
+<div class="p-8 bg-gray-50 min-h-screen">
+  <h2 class="text-3xl font-extrabold mb-6 text-gray-800">Manage Candidates ({{ org.name }})</h2>
+
+  <a href="{% url 'upload_resume' %}" 
+     class="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-5 py-3 rounded-lg shadow hover:shadow-lg hover:scale-[1.02] transition-all duration-200 mb-6 inline-block">
+    ➕ Upload New Resume
+  </a>
+
+  <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+    <table class="min-w-full border-collapse text-left">
+      <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
+        <tr>
+          <th class="py-3 px-6">ID</th>
+          <th class="py-3 px-6">Name</th>
+          <th class="py-3 px-6">Email</th>
+          <th class="py-3 px-6">Status</th>
+          <th class="py-3 px-6">Skills</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for candidate in candidates %}
+        <tr class="border-b hover:bg-gray-50 transition">
+          <td class="py-3 px-6">{{ candidate.id }}</td>
+          <td class="py-3 px-6">{{ candidate.name|default:"-" }}</td>
+          <td class="py-3 px-6">{{ candidate.email|default:"-" }}</td>
+          <td class="py-3 px-6">
+            <span class="px-2 py-1 rounded-full text-xs font-semibold
+              {% if candidate.status == 'Parsed' %} bg-green-100 text-green-700
+              {% elif 'Error' in candidate.status %} bg-red-100 text-red-700
+              {% else %} bg-yellow-100 text-yellow-700
+              {% endif %}">
+              {{ candidate.status }}
+            </span>
+          </td>
+          <td class="py-3 px-6 text-sm text-gray-600">
+            {{ candidate.skills|join:", "|truncatechars:50 }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center py-6 text-gray-500 italic">No candidates found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

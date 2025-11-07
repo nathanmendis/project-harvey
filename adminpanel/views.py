@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from core.models import User
+from core.models import Candidate, Organization # <-- Add Candidate and Organization
+from core.resume_parser import parse_resume # <-- Import our new parser
+import threading
 
 
 def is_org_admin(user):
@@ -181,5 +184,46 @@ def manage_org_admins(request):
 
     return render(request, "manage_org_admins.html", {
         "admins": admins,
+        "org": org
+    })
+
+@login_required
+@user_passes_test(is_org_admin)
+def upload_resume(request):
+    """Allow admin to upload a resume, which creates a candidate and triggers parsing."""
+    org = request.user.organization
+
+    if request.method == "POST":
+        resume_file = request.FILES.get("resume_file")
+        if not resume_file:
+            messages.error(request, "No file selected.")
+            return redirect("upload_resume")
+
+        # Create the candidate object
+        new_candidate = Candidate.objects.create(
+            organization=org,
+            resume_file=resume_file,
+            source="Admin Upload",
+            status="Processing",
+        )
+        
+        # Run parsing in a background thread so the UI is fast
+        threading.Thread(target=parse_resume, args=(new_candidate.id,)).start()
+        
+        messages.success(request, f"Resume uploaded for {resume_file.name}. Parsing in background.")
+        return redirect("manage_candidates")
+
+    return render(request, "upload_resume.html", {"org": org})
+
+
+@login_required
+@user_passes_test(is_org_admin)
+def manage_candidates_view(request):
+    """View all candidates in the organization."""
+    org = request.user.organization
+    candidates = Candidate.objects.filter(organization=org).order_by('-id')
+
+    return render(request, "manage_candidates.html", {
+        "candidates": candidates,
         "org": org
     })
