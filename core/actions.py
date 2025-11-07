@@ -13,7 +13,7 @@ from .tools.base import ActionResult
 INTENT_ROUTER = {
     "create_job_description": job_tools.create_job_description,
     "add_candidate": candidate_tools.add_candidate,
-    "shortlist_candidates": candidate_tools.shortlist_candidates,
+    "match_candidate_to_jobs": candidate_tools.match_candidate_to_jobs,
     "schedule_interview": interview_tools.schedule_interview,
     "send_email": email_tools.send_email,
     "create_calendar_event": calendar_tools.create_calendar_event,

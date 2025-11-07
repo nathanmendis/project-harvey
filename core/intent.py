@@ -13,10 +13,6 @@ INTENT_SCHEMA = {
         "required": ["name", "email", "phone", "skills", "source"],
         "optional": [],
     },
-    "shortlist_candidates": {
-        "required": ["skills"],
-        "optional": ["limit"],
-    },
     "schedule_interview": {
         "required": ["candidate_id", "when", "interviewer_id", "duration_minutes", "location_link"],
         "optional": [],
@@ -25,6 +21,10 @@ INTENT_SCHEMA = {
         "required": ["recipient", "subject", "body"],
         "optional": [],
     },
+    "match_candidate_to_jobs": {
+        "required": ["candidate_id"],
+        "optional": [],
+    }
 }
 
 INTENT_SYSTEM_PROMPT = """
@@ -41,7 +41,9 @@ Always return a JSON object:
 Rules:
 - Use the provided schema for valid field names.
 - Include all recognized fields present in the message.
-- If any required field is missing, include it in `missing_fields`.
+- **Only** check for missing fields that are explicitly listed as "required" in the schema.
+- **Never** add any other field name to the `missing_fields` list.
+- If (and *only* if) a "required" field is missing, include its name in `missing_fields`.
 - Never repeat previously collected information.
 - Return clean JSON only (no markdown, no text outside braces).
 - If unsure, return: {"intent": "unknown", "fields": {}, "missing_fields": []}.
